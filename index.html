@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" class="scroll-smooth">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -13,15 +13,15 @@
       theme: {
         extend: {
           colors: {
-            primary: '#2563EB',    // 선명한 블루 (강조색)
-            secondary: '#3B82F6',  // 부드러운 블루
-            dark: '#0F172A',       // 짙은 네이비 (텍스트)
-            glass: 'rgba(255, 255, 255, 0.65)', // 유리 배경색
-            glassBorder: 'rgba(255, 255, 255, 0.5)', // 유리 테두리
+            primary: '#2563EB',
+            secondary: '#3B82F6',
+            dark: '#0F172A',
+            glass: 'rgba(255, 255, 255, 0.7)',
+            glassDark: 'rgba(255, 255, 255, 0.9)',
           },
           boxShadow: {
-            'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
-            'glass-hover': '0 8px 32px 0 rgba(31, 38, 135, 0.25)',
+            'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.10)',
+            'glass-hover': '0 12px 40px 0 rgba(31, 38, 135, 0.15)',
             'neon': '0 0 15px rgba(59, 130, 246, 0.5)',
             '3d': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.6)'
           },
@@ -36,7 +36,7 @@
             }
           },
           fontFamily: {
-            sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+            sans: ['Pretendard', 'Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
           }
         }
       }
@@ -48,38 +48,39 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <!-- 폰트 및 기본 스타일 -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <!-- 폰트 (Pretendard for better Korean support + Inter) -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+  
   <style>
     body {
-      font-family: 'Inter', sans-serif;
-      /* 배경: 3D 깊이감을 위한 그라데이션 */
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      font-family: 'Pretendard', 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f0f4f8 0%, #dbeafe 50%, #e0e7ff 100%);
       background-attachment: fixed;
       overflow-x: hidden;
     }
     
-    /* 배경에 은은한 오브젝트 추가 (장식용) */
+    /* 배경 장식 */
     .bg-orb {
       position: fixed;
       border-radius: 50%;
-      filter: blur(80px);
+      filter: blur(100px);
       z-index: -1;
-      opacity: 0.6;
+      opacity: 0.5;
     }
-    .orb-1 { width: 400px; height: 400px; background: #60A5FA; top: -100px; left: -100px; }
-    .orb-2 { width: 300px; height: 300px; background: #A78BFA; bottom: 10%; right: -50px; }
+    .orb-1 { width: 500px; height: 500px; background: #60A5FA; top: -150px; left: -100px; }
+    .orb-2 { width: 400px; height: 400px; background: #818CF8; bottom: 0; right: -100px; }
     
-    /* 스크롤바 커스텀 */
-    ::-webkit-scrollbar { width: 8px; }
+    /* 스크롤바 */
+    ::-webkit-scrollbar { width: 10px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 5px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.3); }
+
+    html { scroll-behavior: smooth; }
   </style>
 </head>
 <body class="text-slate-800 antialiased">
 
-  <!-- 배경 장식 요소 -->
   <div class="bg-orb orb-1 animate-pulse-slow"></div>
   <div class="bg-orb orb-2 animate-pulse-slow" style="animation-delay: 2s;"></div>
 
@@ -88,7 +89,7 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    // --- 데이터 (수정 금지: 요청하신 내용 그대로 유지) ---
+    // --- 데이터 ---
     const DATA = {
       hero: {
         nameLine: '완도초등학교 교사 박준효',
@@ -127,11 +128,62 @@
       footerName: 'Park Jun Hyo'
     };
 
-    // --- 컴포넌트: Glass Card (유리 질감 컨테이너) ---
+    // --- Components ---
+    
+    // Top Navigation Bar
+    const Navbar = () => {
+      const [isScrolled, setIsScrolled] = useState(false);
+
+      useEffect(() => {
+        const handleScroll = () => setIsScrolled(window.scrollY > 20);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+      }, []);
+
+      const navClass = isScrolled 
+        ? "bg-white/80 backdrop-blur-md shadow-sm py-4" 
+        : "bg-transparent py-6";
+
+      const scrollTo = (id) => {
+        const el = document.getElementById(id);
+        if(el) {
+          // 상단 네비게이션 높이만큼 보정
+          const y = el.getBoundingClientRect().top + window.pageYOffset - 80;
+          window.scrollTo({top: y, behavior: 'smooth'});
+        }
+      };
+
+      return (
+        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navClass}`}>
+          <div className="max-w-6xl mx-auto px-6 flex justify-between items-center">
+            <div className="font-bold text-xl tracking-tight text-slate-800 cursor-pointer" onClick={() => window.scrollTo({top:0, behavior:'smooth'})}>
+              Park Jun Hyo<span className="text-blue-600">.</span>
+            </div>
+            <div className="hidden md:flex gap-8">
+              {['About', 'Experience', 'Lectures', 'Projects'].map((item) => (
+                <button 
+                  key={item}
+                  onClick={() => scrollTo(item.toLowerCase())}
+                  className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors"
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+            <button 
+              onClick={() => scrollTo('contact')}
+              className="px-5 py-2 rounded-full bg-slate-800 text-white text-sm font-semibold hover:bg-blue-600 transition-all shadow-lg hover:shadow-blue-500/30"
+            >
+              Contact
+            </button>
+          </div>
+        </nav>
+      );
+    };
+
     const GlassCard = ({ children, className = '', hoverEffect = false }) => {
-      const baseStyle = "bg-glass backdrop-blur-xl border border-white/60 rounded-3xl shadow-glass transition-all duration-300";
-      const hoverStyle = hoverEffect ? "hover:-translate-y-2 hover:shadow-glass-hover hover:bg-white/80" : "";
-      
+      const baseStyle = "bg-glassDark backdrop-blur-xl border border-white/50 rounded-3xl shadow-glass transition-all duration-300";
+      const hoverStyle = hoverEffect ? "hover:-translate-y-2 hover:shadow-glass-hover hover:border-blue-200" : "";
       return (
         <div className={`${baseStyle} ${hoverStyle} ${className}`}>
           {children}
@@ -139,13 +191,11 @@
       );
     };
 
-    // --- 컴포넌트: 3D Button ---
     const Button3D = ({ children, className = '', onClick, href, type='button', primary = false }) => {
-      const base = "px-6 py-3 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 active:scale-95";
-      // 입체감을 위한 그라데이션과 그림자
+      const base = "px-8 py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 active:scale-95";
       const styleClass = primary 
-        ? "bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg shadow-blue-500/30 border-t border-white/20 hover:shadow-blue-500/50 hover:-translate-y-0.5"
-        : "bg-white/50 text-slate-700 border border-white/60 hover:bg-white hover:text-blue-600 shadow-sm hover:shadow-md backdrop-blur-sm";
+        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xl shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-1"
+        : "bg-white text-slate-700 border border-slate-200 hover:border-blue-300 hover:text-blue-600 shadow-md hover:shadow-lg hover:-translate-y-1";
 
       if (href) {
         return <a href={href} className={`${base} ${styleClass} ${className}`} target="_blank" rel="noopener noreferrer">{children}</a>;
@@ -153,46 +203,46 @@
       return <button type={type} onClick={onClick} className={`${base} ${styleClass} ${className}`}>{children}</button>;
     };
 
-    // --- 컴포넌트: 섹션 타이틀 ---
     const SectionTitle = ({ title, subtitle }) => (
-      <div className="mb-8 relative">
-        <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-800 to-slate-600 inline-block">
+      <div className="mb-16 text-center md:text-left">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-slate-800 tracking-tight inline-block relative">
           {title}
+          <span className="absolute -bottom-4 left-0 w-full h-1.5 bg-blue-500/30 rounded-full"></span>
         </h2>
-        {subtitle && <p className="text-slate-500 mt-2 font-medium">{subtitle}</p>}
-        <div className="absolute -bottom-3 left-0 w-12 h-1.5 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full"></div>
+        {subtitle && <p className="text-slate-500 mt-6 text-lg font-medium">{subtitle}</p>}
       </div>
     );
 
     function App(){
       return (
-        <div className="min-h-screen w-full p-4 md:p-8 lg:p-12 flex flex-col items-center">
+        <div className="min-h-screen w-full">
           
-          <div className="max-w-6xl w-full space-y-16">
+          <Navbar />
+
+          <main className="max-w-6xl mx-auto px-6 w-full flex flex-col items-center">
             
             {/* HERO SECTION */}
-            <header className="relative z-10 pt-10 md:pt-20 pb-10 grid md:grid-cols-2 gap-12 items-center">
-              <div className="order-2 md:order-1 space-y-6 animate-fade-in-up">
-                <div className="inline-flex px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-100/80 text-blue-700 border border-blue-200 shadow-sm backdrop-blur-sm">
-                  AI & Edutech Innovator
+            <header className="w-full pt-40 pb-20 md:pt-48 md:pb-32 grid md:grid-cols-2 gap-16 items-center">
+              <div className="order-2 md:order-1 space-y-8 animate-fade-in-up text-center md:text-left">
+                <div className="inline-flex px-4 py-1.5 rounded-full text-sm font-bold bg-blue-50 text-blue-600 border border-blue-100 mb-2">
+                  🚀 Edutech Innovator
                 </div>
-                <h1 className="text-4xl md:text-6xl font-black text-slate-800 leading-tight tracking-tight">
-                  미래 교육을 디자인하는<br/>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
-                    {DATA.hero.nameLine.split(' ').pop()}
+                
+                {/* 타이틀 줄바꿈 수정 */}
+                <h1 className="text-4xl md:text-6xl font-black text-slate-900 leading-[1.2] break-keep">
+                  미래 교육을 디자인하는<br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500">
+                    {DATA.hero.nameLine}
                   </span>입니다.
                 </h1>
-                <p className="text-xl text-slate-600 font-medium leading-relaxed">
-                   {DATA.hero.subtitle}
-                </p>
-                <p className="text-slate-500 leading-relaxed max-w-lg">
-                  {DATA.hero.intro}
+
+                <p className="text-xl text-slate-600 leading-relaxed max-w-xl mx-auto md:mx-0 break-keep">
+                   {DATA.hero.intro}
                 </p>
 
-                <div className="pt-4 flex flex-wrap gap-4">
+                <div className="pt-6 flex flex-wrap gap-4 justify-center md:justify-start">
                   <Button3D href={"mailto:" + DATA.contactEmail} primary={true}>
-                    강의 및 협업 문의
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
+                    강의 문의하기
                   </Button3D>
                   <Button3D href="#projects">
                     포트폴리오 보기
@@ -201,172 +251,169 @@
               </div>
 
               <div className="order-1 md:order-2 flex justify-center perspective-1000">
-                {/* 프로필 이미지 컨테이너: 3D 플로팅 효과 */}
-                <div className="relative w-64 h-64 md:w-80 md:h-80 animate-float">
-                  <div className="absolute inset-0 bg-gradient-to-tr from-blue-500 to-cyan-300 rounded-[2rem] rotate-6 opacity-30 blur-lg transform scale-95"></div>
-                  <div className="relative w-full h-full rounded-[2rem] overflow-hidden border-4 border-white shadow-2xl bg-white">
-                    {/* 이미지 경로 유지 */}
-                    <img src="profile.png" alt="박준효 선생님" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700 ease-in-out" />
-                  </div>
-                  {/* 장식 요소 */}
-                  <div className="absolute -bottom-6 -right-6 bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-glass border border-white/60 animate-pulse-slow">
-                    <span className="text-2xl">🎓</span>
-                    <span className="font-bold text-slate-800 ml-2">Edutech</span>
+                <div className="relative w-72 h-72 md:w-96 md:h-96 animate-float">
+                  <div className="absolute inset-0 bg-blue-500 rounded-[2.5rem] rotate-6 opacity-20 blur-2xl transform scale-95"></div>
+                  <div className="relative w-full h-full rounded-[2.5rem] overflow-hidden border-[6px] border-white shadow-2xl bg-white">
+                    <img src="profile.png" alt="프로필 사진" className="w-full h-full object-cover" />
                   </div>
                 </div>
               </div>
             </header>
 
-            {/* ABOUT SECTION */}
-            <section id="about">
-              <GlassCard className="p-8 md:p-12">
-                <div className="grid md:grid-cols-[1fr_2fr] gap-8">
-                  <div>
-                     <h2 className="text-2xl font-extrabold text-slate-800 mb-2">About Me</h2>
-                     <div className="h-1 w-20 bg-blue-500 rounded-full"></div>
-                     <div className="mt-6 text-6xl opacity-10 absolute md:static rotate-12 select-none">❝</div>
-                  </div>
-                  <div className="space-y-4 text-lg text-slate-700 leading-relaxed">
-                    {DATA.about.map((p, i) => <p key={i}>{p}</p>)}
-                  </div>
-                </div>
-              </GlassCard>
-            </section>
-
-            {/* EXPERIENCE SECTION */}
-            <section id="experience">
-              <SectionTitle title="Experience & Awards" subtitle="교육 현장에서의 치열한 고민과 성과" />
+            <div className="w-full space-y-32 mb-32">
               
-              <div className="grid gap-6">
-                {DATA.experiences.map((item, idx) => (
-                  <GlassCard key={idx} className="p-6 flex items-center gap-6 group" hoverEffect={true}>
-                    <div className="hidden sm:flex h-14 w-14 rounded-2xl bg-blue-50 text-blue-600 items-center justify-center shadow-inner font-bold text-xl group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
-                      {idx + 1}
-                    </div>
+              {/* ABOUT SECTION */}
+              <section id="about" className="scroll-mt-32">
+                <GlassCard className="p-10 md:p-16">
+                  <div className="grid md:grid-cols-[1fr_2.5fr] gap-12 items-start">
                     <div>
-                      <h3 className="text-lg md:text-xl font-bold text-slate-800 group-hover:text-blue-700 transition-colors">
-                        {item.split('—')[0]}
-                      </h3>
-                      {item.split('—')[1] && (
-                        <p className="text-slate-500 mt-1 font-medium">
-                           — {item.split('—')[1]}
-                        </p>
-                      )}
+                       <h2 className="text-2xl font-bold text-slate-800">Introduction</h2>
+                       <div className="h-1.5 w-12 bg-blue-500 rounded-full mt-3"></div>
                     </div>
-                  </GlassCard>
-                ))}
-              </div>
-            </section>
+                    <div className="space-y-6 text-lg text-slate-700 leading-relaxed">
+                      {DATA.about.map((p, i) => <p key={i} className="break-keep">{p}</p>)}
+                    </div>
+                  </div>
+                </GlassCard>
+              </section>
 
-            {/* LECTURES & RESOURCES SECTION */}
-            <section id="lectures" className="grid lg:grid-cols-3 gap-8">
-              {/* Lectures Column */}
-              <div className="lg:col-span-2 space-y-6">
-                <SectionTitle title="Lectures" subtitle="현장 적용 중심의 실습 연수" />
-                <div className="grid gap-4">
-                  {DATA.lectures.map((lec, i) => (
-                    <GlassCard key={i} className="p-6 relative overflow-hidden group" hoverEffect={true}>
-                      <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-blue-400 to-blue-600"></div>
-                      <h4 className="text-lg font-bold text-slate-800 group-hover:text-blue-600 transition-colors">{lec.title}</h4>
-                      <p className="mt-2 text-slate-500 text-sm">{lec.desc}</p>
+              {/* EXPERIENCE SECTION */}
+              <section id="experience" className="scroll-mt-32">
+                <SectionTitle title="Experience & Awards" subtitle="교육 현장에서의 치열한 고민과 성과" />
+                
+                <div className="grid gap-8">
+                  {DATA.experiences.map((item, idx) => (
+                    <GlassCard key={idx} className="p-8 flex items-center gap-8 group" hoverEffect={true}>
+                      <div className="hidden sm:flex h-16 w-16 shrink-0 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-600 items-center justify-center shadow-inner font-bold text-2xl group-hover:scale-110 transition-transform duration-300">
+                        {idx + 1}
+                      </div>
+                      <div className="border-l-4 border-blue-100 pl-6 sm:border-none sm:pl-0">
+                        <h3 className="text-xl md:text-2xl font-bold text-slate-800 break-keep">
+                          {item.split('—')[0]}
+                        </h3>
+                        {item.split('—')[1] && (
+                          <p className="text-slate-500 mt-2 text-lg font-medium">
+                             {item.split('—')[1]}
+                          </p>
+                        )}
+                      </div>
                     </GlassCard>
                   ))}
                 </div>
-              </div>
+              </section>
 
-              {/* Resources Column */}
-              <div className="lg:col-span-1">
-                 <GlassCard className="p-6 h-full bg-gradient-to-b from-white/60 to-blue-50/40">
-                    <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                      자료실
-                    </h3>
-                    <p className="text-sm text-slate-500 mb-6">연수 및 강의에 사용된 자료를 다운로드 받으세요.</p>
-                    
-                    <div className="space-y-3">
-                      {DATA.resources.map((r, i) => (
-                        <a key={i} href={r.file} download className="block group">
-                          <div className="flex items-center p-3 rounded-xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all">
-                            <div className="bg-red-50 text-red-500 p-2 rounded-lg mr-3">
-                              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414A2 2 0 0016.414 5L14 2.586A2 2 0 0012.586 2H9z" /><path d="M3 8a2 2 0 012-2v10h8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" /></svg>
-                            </div>
-                            <span className="text-sm font-medium text-slate-700 group-hover:text-blue-600 transition-colors">{r.label}</span>
-                          </div>
-                        </a>
+              {/* LECTURES SECTION */}
+              <section id="lectures" className="scroll-mt-32">
+                <div className="grid lg:grid-cols-12 gap-10">
+                  <div className="lg:col-span-8">
+                    <SectionTitle title="Lectures" subtitle="실습 중심의 연수 프로그램" />
+                    <div className="grid gap-6 mt-8">
+                      {DATA.lectures.map((lec, i) => (
+                        <GlassCard key={i} className="p-8 relative overflow-hidden group" hoverEffect={true}>
+                          <div className="absolute top-0 left-0 w-1.5 h-full bg-blue-500 transition-all group-hover:w-2"></div>
+                          <h4 className="text-xl font-bold text-slate-800">{lec.title}</h4>
+                          <p className="mt-3 text-slate-600 text-base">{lec.desc}</p>
+                        </GlassCard>
                       ))}
                     </div>
-                 </GlassCard>
-              </div>
-            </section>
-
-            {/* PROJECTS SECTION */}
-            <section id="projects">
-              <SectionTitle title="Creative Projects" subtitle="직접 기획하고 개발한 에듀테크 솔루션" />
-              
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {DATA.projects.map((p, idx) => (
-                  <GlassCard key={idx} className="overflow-hidden group flex flex-col" hoverEffect={true}>
-                    {/* 썸네일 영역 */}
-                    <div className="h-40 bg-slate-100 relative overflow-hidden border-b border-slate-100">
-                      <div className="absolute inset-0 bg-slate-200 flex items-center justify-center text-slate-400">
-                         {/* 실제 이미지가 없을 경우를 대비한 플레이스홀더, 이미지가 있으면 덮어씀 */}
-                         <svg className="w-10 h-10 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                      </div>
-                      <img src={p.thumb} alt={p.title} className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
-                    </div>
-                    
-                    <div className="p-5 flex-1 flex flex-col justify-between">
-                      <div>
-                        <h3 className="font-bold text-slate-800 text-lg">{p.title}</h3>
-                        <p className="text-sm text-slate-500 mt-2 line-clamp-2">{p.desc}</p>
-                      </div>
-                      <div className="mt-4 pt-4 border-t border-slate-100 flex justify-between items-center">
-                        <span className="text-xs font-bold text-blue-500 bg-blue-50 px-2 py-1 rounded-md">WEB APP</span>
-                        <button className="text-slate-400 hover:text-blue-600 transition-colors">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                        </button>
-                      </div>
-                    </div>
-                  </GlassCard>
-                ))}
-              </div>
-            </section>
-
-            {/* CONTACT SECTION */}
-            <section id="contact" className="pb-20">
-              <GlassCard className="p-8 md:p-12 bg-gradient-to-r from-blue-600 to-indigo-700 text-white border-none shadow-2xl relative overflow-hidden">
-                {/* 배경 효과 */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-                
-                <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-                  <div className="text-center md:text-left">
-                    <h2 className="text-3xl font-extrabold mb-2 text-white">Let's work together!</h2>
-                    <p className="text-blue-100 text-lg opacity-90">
-                      강의, 연수, 컨설팅 등 새로운 교육의 기회를 기다립니다.
-                    </p>
                   </div>
-                  <a 
-                    href={"mailto:" + DATA.contactEmail} 
-                    className="px-8 py-4 bg-white text-blue-600 font-bold rounded-xl shadow-lg hover:bg-blue-50 hover:scale-105 transition-all duration-300 flex items-center gap-2"
-                  >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
-                    이메일 보내기
-                  </a>
-                </div>
-              </GlassCard>
-            </section>
 
-          </div>
+                  <div className="lg:col-span-4 flex flex-col h-full pt-0 lg:pt-24">
+                     <GlassCard className="p-8 flex-1 bg-gradient-to-b from-white to-blue-50/50">
+                        <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                          <span className="bg-blue-100 p-1.5 rounded-lg text-blue-600">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                          </span>
+                          연수 자료실
+                        </h3>
+                        
+                        <div className="space-y-4">
+                          {DATA.resources.map((r, i) => (
+                            <a key={i} href={r.file} download className="block group">
+                              <div className="flex items-center p-4 rounded-xl bg-white border border-slate-100 shadow-sm group-hover:shadow-md group-hover:border-blue-200 transition-all">
+                                <div className="text-red-500 mr-4">
+                                  <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414A2 2 0 0016.414 5L14 2.586A2 2 0 0012.586 2H9z" /><path d="M3 8a2 2 0 012-2v10h8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" /></svg>
+                                </div>
+                                <div>
+                                  <div className="text-sm font-bold text-slate-700 group-hover:text-blue-600 transition-colors">{r.label}</div>
+                                  <div className="text-xs text-slate-400 mt-1">Download PDF</div>
+                                </div>
+                              </div>
+                            </a>
+                          ))}
+                        </div>
+                     </GlassCard>
+                  </div>
+                </div>
+              </section>
+
+              {/* PROJECTS SECTION */}
+              <section id="projects" className="scroll-mt-32">
+                <SectionTitle title="Creative Projects" subtitle="직접 기획하고 개발한 에듀테크 솔루션" />
+                
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                  {DATA.projects.map((p, idx) => (
+                    <GlassCard key={idx} className="overflow-hidden group flex flex-col h-full" hoverEffect={true}>
+                      <div className="h-48 bg-slate-100 relative overflow-hidden border-b border-slate-100">
+                        <div className="absolute inset-0 bg-slate-200 flex items-center justify-center text-slate-400">
+                           <svg className="w-12 h-12 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <img src={p.thumb} alt={p.title} className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
+                        <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+                      </div>
+                      
+                      <div className="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                          <h3 className="font-bold text-slate-800 text-xl mb-2">{p.title}</h3>
+                          <p className="text-slate-500 text-sm leading-relaxed">{p.desc}</p>
+                        </div>
+                        <div className="mt-6 pt-4 border-t border-slate-100 flex justify-end">
+                          <button className="text-sm font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors">
+                            자세히 보기 &rarr;
+                          </button>
+                        </div>
+                      </div>
+                    </GlassCard>
+                  ))}
+                </div>
+              </section>
+
+              {/* CONTACT SECTION */}
+              <section id="contact" className="scroll-mt-32 pb-20">
+                <GlassCard className="p-12 md:p-20 bg-gradient-to-r from-slate-900 to-slate-800 text-white border-none shadow-2xl relative overflow-hidden text-center">
+                  <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 opacity-20 rounded-full blur-[100px] pointer-events-none"></div>
+                  <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500 opacity-20 rounded-full blur-[80px] pointer-events-none"></div>
+                  
+                  <div className="relative z-10 max-w-2xl mx-auto space-y-8">
+                    <h2 className="text-3xl md:text-5xl font-bold">Let's work together!</h2>
+                    <p className="text-slate-300 text-lg md:text-xl">
+                      강의, 연수, 컨설팅 등 선생님들과 함께 성장할 수 있는<br className="hidden md:block"/>
+                      새로운 교육의 기회를 언제나 환영합니다.
+                    </p>
+                    <div className="flex justify-center pt-4">
+                      <a 
+                        href={"mailto:" + DATA.contactEmail} 
+                        className="px-10 py-5 bg-white text-slate-900 font-bold rounded-full text-lg shadow-lg hover:bg-blue-50 hover:scale-105 transition-all duration-300 flex items-center gap-3"
+                      >
+                        <svg className="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
+                        이메일 보내기
+                      </a>
+                    </div>
+                  </div>
+                </GlassCard>
+              </section>
+
+            </div>
+          </main>
 
           {/* FOOTER */}
-          <footer className="w-full text-center py-8 text-slate-400 text-sm">
+          <footer className="w-full text-center py-12 text-slate-400 text-sm bg-white/50 backdrop-blur-sm border-t border-white/50">
             <p className="font-medium">{DATA.footerNote}</p>
-            <p className="mt-1">© {DATA.footerYear} {DATA.footerName}. All Rights Reserved.</p>
+            <p className="mt-2">© {DATA.footerYear} {DATA.footerName}. All Rights Reserved.</p>
           </footer>
 
           {/* Top Button */}
-          <a href="#" className="fixed bottom-8 right-8 p-3 rounded-full bg-white/80 backdrop-blur border border-white shadow-lg text-blue-600 hover:-translate-y-1 hover:shadow-xl transition-all z-50" aria-label="Top">
+          <a href="#" className="fixed bottom-10 right-10 p-4 rounded-full bg-white shadow-xl text-blue-600 hover:-translate-y-1 hover:shadow-2xl transition-all z-40 border border-slate-100" aria-label="Top">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7"/></svg>
           </a>
 
