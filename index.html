@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>박준효 | AI & Edutech</title>
+
+  <!-- Tailwind Play CDN (개발용, Vercel 배포시에도 동작) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Tailwind 커스텀 설정 (파스텔톤 블루 + 짙은 블루)
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pastelBlue: '#E8F3FF',
+            softBlue: '#7FB3FF',
+            deepBlue: '#1F4B7A',
+            steel: '#9AA7B2'
+          },
+          boxShadow: {
+            soft: '0 6px 18px rgba(31,75,122,0.08)',
+            soft2: '0 8px 28px rgba(47,92,151,0.08)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- React + Babel (브라우저에서 JSX 사용) -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* 간단한 reset과 body 스타일 */
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: white; }
+  </style>
+</head>
+<body class="text-gray-800">
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    // --- 편집하기 쉬운 텍스트 / 데이터 모음 ---
+    const DATA = {
+      hero: {
+        nameLine: '완도초등학교 교사 박준효',
+        subtitle: 'AI & Edutech 기반 미래교육 — Future Classroom',
+        intro: '기술은 도구이고, 본질은 교육입니다. 교실에서의 효율을 높이고 아이들과의 시간을 더 깊게 만드는 것이 목표입니다.'
+      },
+      about: [
+        `저는 AI와 에듀테크를 교실에 적용하여 '교사의 업무는 줄이고 학생과의 상호작용은 늘리는' 것을 목표로 하는 교육자입니다. 수업 설계에서부터 평가까지 기술을 도구로 활용해 교실 혁신을 추구합니다.`,
+        `학생 중심의 학습을 지향하며, 교사의 전문성 확장과 함께 교육 공동체 전체의 역량을 높이는 데 관심이 많습니다. 실습 중심의 연수와 맞춤형 컨설팅을 통해 현장 적용 가능성을 최우선으로 합니다.`
+      ],
+      experiences: [
+        '완도초등학교 — 교사 (SW·AI 교육 담당)',
+        'SW교육체험센터 전담 강사 — 지역 연수 운영',
+        '교실혁명 선도교사 — 미래교실 모델 개발 참여',
+        '교육부 장관상 수상 — 교실 혁신 및 교육콘텐츠 개발'
+      ],
+      lectures: [
+        { title: 'ChatGPT를 활용한 교실 수업 설계', desc: 'AI 도구를 수업 설계와 평가에 안전하고 효과적으로 적용하는 방법' },
+        { title: 'Notion으로 수업·연수 운영 자동화', desc: '교사 업무 경감을 위한 Notion 템플릿과 운영 노하우' },
+        { title: 'Miricanvas로 만드는 협업형 프로젝트', desc: '학생 참여형 프로젝트 중심 수업 설계 실습' },
+      ],
+      resources: [
+        { file: 'chatgpt.pdf', label: 'ChatGPT 연수 자료' },
+        { file: 'notion.pdf', label: 'Notion 연수 자료' },
+        { file: 'miricanvas.pdf', label: 'Miricanvas 연수 자료' }
+      ],
+      projects: [
+        { title: 'AI CatchMind', desc: 'AI와 함께 맞추는 그림 퀴즈', thumb: 'aicatchmind.png' },
+        { title: '속담 맞추기 게임', desc: '속담 이해력을 높이는 학습 게임', thumb: 'proverb-game.png' },
+        { title: '쇼핑 미션', desc: '수학과 생활문제를 결합한 미션형 앱', thumb: 'shopping-mission.png' },
+        { title: 'TTS 데모', desc: '수업 보조용 TTS 프로토타입', thumb: 'tts-demo.png' }
+      ],
+      contactEmail: 'jhjhpark0800@gmail.com',
+      footerNote: 'Designed for Future Education',
+      footerYear: '2025',
+      footerName: 'Park Jun Hyo'
+    };
+
+    // --- 재사용 가능한 컴포넌트들 ---
+    const Button = ({ children, className = '', onClick, href, type='button' }) => {
+      const base = "px-4 py-2 rounded-2xl font-medium shadow-soft flex items-center gap-2";
+      const classes = " " + className;
+      if (href) {
+        return <a href={href} className={`${base} ${classes}`} target="_blank" rel="noopener noreferrer">{children}</a>;
+      }
+      return <button type={type} onClick={onClick} className={`${base} ${classes}`}>{children}</button>;
+    };
+
+    function App(){
+      return (
+        <div className="min-h-screen max-w-5xl mx-auto p-6 md:p-10">
+          {/* HERO */}
+          <header className="grid md:grid-cols-2 gap-8 items-center py-8">
+            <div>
+              <div className="inline-block px-3 py-1 rounded-full text-sm font-semibold bg-pastelBlue text-deepBlue mb-4">AI & Edutech</div>
+              <h1 className="text-3xl md:text-5xl font-extrabold text-deepBlue leading-tight">
+                {DATA.hero.nameLine}
+              </h1>
+              <p className="mt-3 text-lg text-steel">{DATA.hero.subtitle}</p>
+              <p className="mt-4 text-gray-700 max-w-xl">{DATA.hero.intro}</p>
+
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Button className="bg-deepBlue text-white hover:opacity-95" href={"mailto:" + DATA.contactEmail}>
+                  강의 문의
+                </Button>
+                <a href="#projects" className="px-4 py-2 rounded-2xl font-medium shadow-soft border border-gray-200 text-deepBlue hover:bg-pastelBlue">포트폴리오 보기</a>
+              </div>
+            </div>
+
+            <div className="flex justify-center md:justify-end">
+              <div className="w-48 h-48 md:w-56 md:h-56 rounded-2xl overflow-hidden shadow-soft2 border border-gray-100">
+                <img src="profile.png" alt="프로필 사진" className="object-cover w-full h-full" />
+              </div>
+            </div>
+          </header>
+
+          <main className="space-y-12">
+            {/* ABOUT */}
+            <section id="about" className="bg-white p-6 md:p-8 rounded-2xl shadow-soft">
+              <h2 className="text-xl font-bold text-deepBlue">나는 어떤 선생님인가요?</h2>
+              <div className="mt-4 text-gray-700 space-y-3">
+                {DATA.about.map((p, i) => <p key={i}>{p}</p>)}
+              </div>
+            </section>
+
+            {/* EXPERIENCE */}
+            <section id="experience" className="grid md:grid-cols-3 gap-6">
+              <div className="md:col-span-1 p-6 rounded-2xl bg-pastelBlue/60 shadow-soft">
+                <h3 className="font-bold text-deepBlue">Experience & Awards</h3>
+                <p className="mt-2 text-sm text-steel">주요 경력과 수상</p>
+              </div>
+              <div className="md:col-span-2 grid gap-4">
+                {DATA.experiences.map((item, idx) => (
+                  <div key={idx} className="p-4 rounded-xl bg-white border border-gray-100 shadow-soft flex items-start gap-4">
+                    <div className="w-3 h-12 rounded-full bg-softBlue/40"></div>
+                    <div>
+                      <div className="font-semibold text-deepBlue">{item}</div>
+                      <div className="text-sm text-gray-500 mt-1">현장 중심의 교육 실천과 연수 운영 경험을 보유.</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* LECTURES */}
+            <section id="lectures" className="p-6 rounded-2xl bg-white shadow-soft">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-deepBlue">Lectures / 연수</h3>
+                <p className="text-sm text-steel">현장 적용 중심의 실습 연수</p>
+              </div>
+
+              <div className="mt-4 grid md:grid-cols-3 gap-4">
+                {DATA.lectures.map((lec, i) => (
+                  <div key={i} className="p-4 rounded-xl border border-gray-100 shadow-soft bg-pastelBlue/30">
+                    <h4 className="font-semibold text-deepBlue">{lec.title}</h4>
+                    <p className="mt-2 text-sm text-gray-700">{lec.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6">
+                <h4 className="font-semibold text-deepBlue">연수 자료 다운로드</h4>
+                <div className="mt-3 flex flex-wrap gap-3">
+                  {DATA.resources.map((r, i) => (
+                    <a key={i} href={r.file} download className="px-3 py-2 rounded-xl bg-white border border-gray-200 shadow-soft inline-flex items-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-deepBlue" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v12m0 0l-4-4m4 4l4-4M21 21H3"/></svg>
+                      <span className="text-sm">{r.label}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* PROJECTS / LINKS */}
+            <section id="projects" className="p-6 rounded-2xl bg-white shadow-soft">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-deepBlue">Links / Projects</h3>
+                <p className="text-sm text-steel">제가 개발하거나 운영한 웹앱·교육프로젝트</p>
+              </div>
+
+              <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {DATA.projects.map((p, idx) => (
+                  <div key={idx} className="rounded-xl overflow-hidden bg-pastelBlue/40 shadow-soft border border-gray-100 flex flex-col">
+                    <div className="h-36 bg-gray-100 flex items-center justify-center">
+                      <img src={p.thumb} alt={p.title + " 썸네일"} className="object-contain h-full" />
+                    </div>
+                    <div className="p-4">
+                      <div className="font-semibold text-deepBlue">{p.title}</div>
+                      <div className="text-sm text-gray-600 mt-2">{p.desc}</div>
+                      <div className="mt-3">
+                        <a href="#" className="text-sm underline text-deepBlue">프로젝트 보기 (예시)</a>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* CONTACT */}
+            <section id="contact" className="p-6 rounded-2xl bg-pastelBlue/50 shadow-soft flex flex-col md:flex-row items-center justify-between gap-4">
+              <div>
+                <h3 className="text-xl font-bold text-deepBlue">강의·연수·컨설팅 문의</h3>
+                <p className="mt-2 text-gray-700">강의·연수·컨설팅 문의는 이메일로 연락 주세요.</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <a className="px-4 py-2 rounded-2xl font-medium shadow-soft border border-deepBlue bg-white text-deepBlue" href={"mailto:" + DATA.contactEmail}>
+                  {DATA.contactEmail}
+                </a>
+              </div>
+            </section>
+          </main>
+
+          {/* FOOTER */}
+          <footer className="mt-12 text-center text-sm text-gray-500">
+            <div>{DATA.footerNote} / © {DATA.footerYear} {DATA.footerName}. All Rights Reserved.</div>
+          </footer>
+
+          {/* 작은 고정 버튼: 상단으로 */}
+          <a href="#top" className="fixed bottom-6 right-6 p-3 rounded-full shadow-soft bg-white border border-gray-100 hidden md:inline-flex">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-deepBlue" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7"/></svg>
+          </a>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+
+</body>
+</html>
