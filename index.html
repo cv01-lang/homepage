@@ -3,32 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio | 3D Glassmorphism</title>
-    
-    <!-- React & ReactDOM (CDN) -->
+    <title>Creative Developer | 3D Portfolio</title>
+    <meta name="description" content="Glassmorphism 3D Portfolio">
+
+    <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     
-    <!-- Babel (JSX 변환용) -->
+    <!-- Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
-    <!-- Tailwind CSS (CDN) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Tailwind 설정: 애니메이션 및 컬러 확장 -->
+    <!-- Tailwind Config -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
                     animation: {
+                        'blob': 'blob 7s infinite',
                         'float': 'float 6s ease-in-out infinite',
-                        'float-delayed': 'float 6s ease-in-out 3s infinite',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float-slow': 'float 8s ease-in-out infinite',
+                        'float-fast': 'float 4s ease-in-out infinite',
+                        'shine': 'shine 1.5s infinite',
                     },
                     keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
                         float: {
                             '0%, 100%': { transform: 'translateY(0)' },
                             '50%': { transform: 'translateY(-20px)' },
+                        },
+                        shine: {
+                            '100%': { left: '125%' },
+                        }
+                    },
+                    colors: {
+                        glass: {
+                            100: 'rgba(255, 255, 255, 0.1)',
+                            200: 'rgba(255, 255, 255, 0.2)',
+                            300: 'rgba(255, 255, 255, 0.3)',
                         }
                     }
                 }
@@ -37,12 +59,16 @@
     </script>
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
         body {
-            background-color: #0f172a; /* 다크 모드 배경 */
-            color: white;
+            background-color: #020617; /* Deep Slate */
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
             overflow-x: hidden;
         }
-        /* 스크롤바 숨김 (선택사항) */
+
+        /* 커스텀 스크롤바 */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -50,196 +76,244 @@
             background: #0f172a;
         }
         ::-webkit-scrollbar-thumb {
-            background: #334155;
+            background: #475569;
             border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* 유틸리티: 텍스트 그라디언트 */
+        .text-gradient {
+            background: linear-gradient(to right, #c084fc, #6366f1, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
     </style>
 </head>
 <body>
-
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // [아이콘 컴포넌트] - SVG 직접 사용
-        const IconCode = () => (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-        );
-        const IconLayout = () => (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-        );
-        const IconRocket = () => (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path></svg>
-        );
-        const IconArrowRight = () => (
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        // --- [Icons] ---
+        const IconGithub = () => <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>;
+        const IconExternal = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>;
+        const IconCode = () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>;
+        const IconDesign = () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>;
+        const IconArrow = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>;
+
+        // --- [Components] ---
+
+        // 1. Animated Background Blobs (은은한 오로라 효과)
+        const Background = () => (
+            <div className="fixed inset-0 w-full h-full overflow-hidden -z-10 bg-[#020617]">
+                <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-40 animate-blob"></div>
+                <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-40 animate-blob animation-delay-2000"></div>
+                <div className="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-40 animate-blob animation-delay-4000"></div>
+                <div className="absolute bottom-[10%] right-[10%] w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-30 animate-pulse"></div>
+            </div>
         );
 
-        // [공통] 3D Glass Card 컴포넌트
-        const GlassCard = ({ children, className = "", hoverEffect = true }) => (
-            <div className={`
-                relative overflow-hidden rounded-2xl border border-white/10 
-                bg-white/5 backdrop-blur-lg shadow-xl 
-                transition-all duration-500 ease-out
-                ${hoverEffect ? 'hover:-translate-y-2 hover:shadow-purple-500/20 hover:border-white/30' : ''}
-                ${className}
-            `}>
-                {/* 카드 내부 빛 반사 효과 */}
-                <div className="absolute -top-20 -right-20 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
-                <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
-                <div className="relative z-10">
-                    {children}
+        // 2. Glass Card Component (핵심 디자인 요소)
+        const GlassCard = ({ children, className = "", hover = true }) => {
+            return (
+                <div className={`
+                    relative overflow-hidden rounded-2xl 
+                    bg-white/5 backdrop-blur-md 
+                    border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)]
+                    transition-all duration-500 ease-out
+                    ${hover ? 'group hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(120,119,198,0.3)] hover:border-white/20' : ''}
+                    ${className}
+                `}>
+                    {/* 카드 내부 하이라이트 그라데이션 (반사광) */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                    
+                    {/* 빗살무늬 빛 효과 (Shine) */}
+                    <div className="absolute top-0 -left-[100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[25deg] group-hover:animate-shine pointer-events-none"></div>
+
+                    <div className="relative z-10 h-full">
+                        {children}
+                    </div>
                 </div>
-            </div>
-        );
+            );
+        };
 
-        // [배경] 둥둥 떠다니는 오브젝트
-        const BackgroundBlobs = () => (
-            <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-                <div className="absolute top-[10%] left-[20%] w-72 h-72 bg-purple-600/30 rounded-full mix-blend-screen filter blur-[100px] animate-float"></div>
-                <div className="absolute top-[40%] right-[20%] w-96 h-96 bg-blue-600/20 rounded-full mix-blend-screen filter blur-[100px] animate-float-delayed"></div>
-                <div className="absolute bottom-[10%] left-[30%] w-64 h-64 bg-pink-600/20 rounded-full mix-blend-screen filter blur-[100px] animate-float"></div>
-            </div>
-        );
-
-        // [네비게이션]
+        // 3. Navbar
         const Navbar = () => (
-            <nav className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 px-4">
-                <div className="flex items-center gap-8 px-8 py-3 rounded-full border border-white/10 bg-black/20 backdrop-blur-md shadow-lg">
-                    <a href="#" className="text-white font-bold text-lg tracking-wide hover:text-purple-400 transition-colors">PORTFOLIO</a>
+            <nav className="fixed top-0 z-50 w-full px-6 py-4 flex justify-center">
+                <div className="flex items-center gap-8 px-8 py-3 rounded-full bg-black/20 backdrop-blur-xl border border-white/10 shadow-lg">
+                    <a href="#" className="font-bold text-xl tracking-tighter text-white">DEV<span className="text-purple-400">.</span></a>
                     <div className="hidden md:flex gap-6 text-sm font-medium text-gray-300">
-                        <a href="#about" className="hover:text-white transition-colors">About</a>
                         <a href="#projects" className="hover:text-white transition-colors">Projects</a>
+                        <a href="#about" className="hover:text-white transition-colors">About</a>
                         <a href="#contact" className="hover:text-white transition-colors">Contact</a>
                     </div>
                 </div>
             </nav>
         );
 
-        // [섹션 1] 히어로 섹션
+        // 4. Hero Section
         const Hero = () => (
-            <section className="min-h-screen flex flex-col items-center justify-center text-center px-4 pt-20 relative">
-                <div className="space-y-6 max-w-3xl mx-auto">
-                    <div className="inline-block px-4 py-1 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-300 text-sm font-semibold tracking-wider animate-pulse-slow">
-                        Welcome to my universe
+            <section className="min-h-screen flex flex-col justify-center items-center px-4 relative pt-20">
+                {/* 3D Floating Elements */}
+                <div className="absolute top-1/4 left-1/4 w-12 h-12 bg-gradient-to-br from-purple-400 to-indigo-600 rounded-xl opacity-50 blur-sm animate-float-slow rotate-12"></div>
+                <div className="absolute bottom-1/4 right-1/4 w-16 h-16 bg-gradient-to-br from-blue-400 to-cyan-600 rounded-full opacity-50 blur-sm animate-float-fast"></div>
+
+                <div className="text-center max-w-4xl mx-auto space-y-8 z-10">
+                    <div className="inline-flex items-center px-3 py-1 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-300 text-xs font-bold tracking-wide uppercase animate-fade-in-up">
+                        <span className="w-2 h-2 bg-purple-400 rounded-full mr-2 animate-pulse"></span>
+                        Available for work
                     </div>
-                    
-                    <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight">
-                        Design & Code <br/>
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-                            With Depth.
+
+                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-[1.1]">
+                        Building the <br />
+                        <span className="text-gradient relative">
+                            Digital Future
+                            {/* 텍스트 밑줄 효과 */}
+                            <svg className="absolute w-full h-3 -bottom-1 left-0 text-purple-500 opacity-60" viewBox="0 0 200 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.00025 6.99997C18.5038 5.51381 48.9855 3.9522 65 4.00002C116.667 4.15435 168.5 6.00003 198.5 2.5" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/></svg>
                         </span>
                     </h1>
-                    
+
                     <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                        안녕하세요. 사용자 경험에 깊이를 더하는 프론트엔드 개발자입니다.<br/>
-                        React와 현대적인 UI 기술로 입체적인 웹을 만듭니다.
+                        안녕하세요. 사용자 경험에 깊이를 더하는 프론트엔드 개발자입니다. 
+                        React와 3D 디자인을 결합하여 몰입감 있는 웹사이트를 만듭니다.
                     </p>
 
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-                        <button className="group relative px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300">
-                            <span className="flex items-center gap-2">
-                                프로젝트 보기 <IconArrowRight />
-                            </span>
-                            {/* 버튼 내부 광택 효과 */}
-                            <div className="absolute inset-0 rounded-xl bg-white/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                        <button className="group relative px-8 py-4 rounded-xl bg-white text-black font-bold text-lg shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] hover:scale-105 transition-all duration-300 overflow-hidden">
+                            <span className="relative z-10 flex items-center gap-2">View Projects <IconArrow /></span>
+                            <div className="absolute inset-0 bg-gradient-to-r from-purple-200 to-blue-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         </button>
-                        
-                        <button className="px-8 py-4 rounded-xl border border-white/10 bg-white/5 text-white font-bold hover:bg-white/10 transition-all duration-300 backdrop-blur-sm">
-                            연락하기
+                        <button className="px-8 py-4 rounded-xl border border-white/20 bg-white/5 backdrop-blur-md text-white font-bold text-lg hover:bg-white/10 hover:border-white/40 transition-all duration-300">
+                            Contact Me
                         </button>
                     </div>
                 </div>
             </section>
         );
 
-        // [섹션 2] 특징/스킬 카드
-        const Features = () => {
-            const features = [
-                { title: "Modern React", desc: "최신 Hooks 패턴과 상태 관리 라이브러리를 활용한 SPA 개발", icon: <IconCode /> },
-                { title: "Interactive UI", desc: "Framer Motion 및 CSS Animation을 활용한 동적 경험 제공", icon: <IconLayout /> },
-                { title: "Performance", desc: "Lighthouse 최적화 및 웹 표준, 접근성을 준수하는 코딩", icon: <IconRocket /> },
-            ];
+        // 5. Features Section
+        const Features = () => (
+            <section id="about" className="py-24 px-4 max-w-7xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {[
+                        { title: "Modern Tech", desc: "React, Next.js, Tailwind를 활용한 최신 기술 스택", icon: <IconCode /> },
+                        { title: "UI/UX Design", desc: "사용자 중심의 직관적이고 아름다운 인터페이스 설계", icon: <IconDesign /> },
+                        { title: "Performance", desc: "Lighthouse 100점을 목표로 하는 웹 최적화", icon: <IconExternal /> }
+                    ].map((item, idx) => (
+                        <GlassCard key={idx} className="p-8 flex flex-col items-start gap-4 h-full">
+                            <div className="p-3 rounded-lg bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-white/10 text-white mb-2">
+                                {item.icon}
+                            </div>
+                            <h3 className="text-2xl font-bold text-white">{item.title}</h3>
+                            <p className="text-gray-400 leading-relaxed">{item.desc}</p>
+                        </GlassCard>
+                    ))}
+                </div>
+            </section>
+        );
 
-            return (
-                <section id="about" className="py-20 px-4 max-w-6xl mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {features.map((f, i) => (
-                            <GlassCard key={i} className="p-8 group">
-                                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mb-6 text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                    {f.icon}
-                                </div>
-                                <h3 className="text-2xl font-bold mb-3 text-white">{f.title}</h3>
-                                <p className="text-gray-400 leading-relaxed">
-                                    {f.desc}
-                                </p>
-                            </GlassCard>
-                        ))}
-                    </div>
-                </section>
-            );
-        }
-
-        // [섹션 3] 프로젝트 갤러리
+        // 6. Projects Section
         const Projects = () => {
             const projects = [
-                { title: "Crypto Dashboard", tag: "Fintech", color: "from-green-400 to-emerald-600" },
-                { title: "AI Image Gen", tag: "Creative Tool", color: "from-pink-400 to-rose-600" },
-                { title: "Metaverse Chat", tag: "Social", color: "from-blue-400 to-indigo-600" },
+                { 
+                    title: "SaaS Dashboard", 
+                    category: "Web App", 
+                    desc: "데이터 시각화 및 분석을 위한 대시보드. 다크모드 및 실시간 차트 지원.",
+                    tags: ["React", "Chart.js", "Tailwind"],
+                    color: "from-pink-500 to-rose-500"
+                },
+                { 
+                    title: "AI Image Generator", 
+                    category: "AI Tool", 
+                    desc: "OpenAI API를 활용한 이미지 생성 서비스. 프롬프트 최적화 기능 포함.",
+                    tags: ["Next.js", "OpenAI", "Stripe"],
+                    color: "from-purple-500 to-indigo-500"
+                },
+                { 
+                    title: "E-commerce Platform", 
+                    category: "Commerce", 
+                    desc: "결제 시스템과 장바구니 기능이 포함된 풀스택 쇼핑몰 프로젝트.",
+                    tags: ["TypeScript", "Supabase", "Redux"],
+                    color: "from-cyan-500 to-blue-500"
+                }
             ];
 
             return (
-                <section id="projects" className="py-20 px-4 max-w-6xl mx-auto">
-                    <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
-                        Featured <span className="text-purple-400">Work</span>
+                <section id="projects" className="py-24 px-4 max-w-7xl mx-auto relative">
+                    <h2 className="text-4xl md:text-5xl font-bold mb-16 text-center">
+                        Featured <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Work</span>
                     </h2>
+                    
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {projects.map((p, i) => (
-                            <GlassCard key={i} className="p-0 group cursor-pointer">
-                                {/* 썸네일 영역 */}
-                                <div className={`h-48 w-full bg-gradient-to-br ${p.color} relative overflow-hidden`}>
-                                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
-                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                        <span className="px-4 py-2 bg-white/20 backdrop-blur-md rounded-full text-white font-semibold border border-white/30">View Case</span>
+                        {projects.map((project, idx) => (
+                            <GlassCard key={idx} className="flex flex-col h-full group">
+                                {/* Project Thumbnail (Gradient Placeholder) */}
+                                <div className={`h-56 w-full bg-gradient-to-br ${project.color} relative overflow-hidden`}>
+                                    <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500"></div>
+                                    {/* Hover Reveal Button */}
+                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
+                                        <button className="px-6 py-2 rounded-full bg-black/30 backdrop-blur-md border border-white/20 text-white font-semibold hover:bg-black/50 transition-colors">
+                                            View Details
+                                        </button>
                                     </div>
                                 </div>
-                                {/* 텍스트 영역 */}
-                                <div className="p-6">
-                                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{p.tag}</span>
-                                    <h3 className="text-xl font-bold text-white mt-2 group-hover:text-purple-400 transition-colors">{p.title}</h3>
-                                    <p className="text-sm text-gray-400 mt-2">
-                                        React, Tailwind CSS 및 외부 API를 연동하여 제작한 웹 애플리케이션입니다.
+                                
+                                {/* Content */}
+                                <div className="p-6 flex-1 flex flex-col">
+                                    <div className="flex justify-between items-center mb-3">
+                                        <span className="text-xs font-bold text-purple-400 uppercase tracking-wider">{project.category}</span>
+                                        <div className="flex gap-2">
+                                            <a href="#" className="text-gray-400 hover:text-white transition-colors"><IconGithub /></a>
+                                            <a href="#" className="text-gray-400 hover:text-white transition-colors"><IconExternal /></a>
+                                        </div>
+                                    </div>
+                                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-purple-300 transition-colors">{project.title}</h3>
+                                    <p className="text-gray-400 text-sm mb-6 leading-relaxed flex-1">
+                                        {project.desc}
                                     </p>
+                                    <div className="flex flex-wrap gap-2 mt-auto">
+                                        {project.tags.map((tag, tIdx) => (
+                                            <span key={tIdx} className="px-2 py-1 text-xs rounded-md bg-white/5 border border-white/10 text-gray-300">
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
                                 </div>
                             </GlassCard>
                         ))}
                     </div>
                 </section>
             );
-        }
+        };
 
-        // [푸터]
+        // 7. Footer
         const Footer = () => (
-            <footer id="contact" className="border-t border-white/10 mt-20 bg-black/20 backdrop-blur-md">
-                <div className="max-w-6xl mx-auto py-12 px-4 text-center">
-                    <h2 className="text-2xl font-bold mb-6">Let's build something amazing together.</h2>
-                    <div className="flex justify-center gap-6 mb-8">
-                        <a href="#" className="text-gray-400 hover:text-white transition-colors">Github</a>
-                        <a href="#" className="text-gray-400 hover:text-white transition-colors">LinkedIn</a>
-                        <a href="#" className="text-gray-400 hover:text-white transition-colors">Email</a>
+            <footer id="contact" className="py-12 px-4 border-t border-white/5 bg-black/20 backdrop-blur-xl mt-20">
+                <div className="max-w-4xl mx-auto text-center space-y-8">
+                    <h2 className="text-3xl font-bold text-white">Let's create something amazing together</h2>
+                    <p className="text-gray-400">프로젝트 문의나 가벼운 인사도 언제나 환영합니다.</p>
+                    
+                    <div className="flex justify-center gap-6">
+                        <a href="mailto:hello@example.com" className="px-6 py-3 rounded-lg bg-white text-black font-bold hover:scale-105 transition-transform">
+                            Email Me
+                        </a>
                     </div>
-                    <p className="text-gray-600 text-sm">
-                        © 2024 My Portfolio. Designed with React & Tailwind.
-                    </p>
+
+                    <div className="pt-8 text-sm text-gray-600 border-t border-white/5 mt-8">
+                        &copy; 2024 Portfolio. Built with React & Tailwind CSS.
+                    </div>
                 </div>
             </footer>
         );
 
+        // --- [Main App] ---
         const App = () => {
             return (
-                <div className="relative min-h-screen font-sans antialiased selection:bg-purple-500 selection:text-white">
-                    <BackgroundBlobs />
+                <div className="relative min-h-screen selection:bg-purple-500 selection:text-white">
+                    <Background />
                     <Navbar />
                     <Hero />
                     <Features />
