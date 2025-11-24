@@ -1,237 +1,256 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>박준효 | AI & Edutech</title>
-
-  <!-- Tailwind Play CDN (개발용, Vercel 배포시에도 동작) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    // Tailwind 커스텀 설정 (파스텔톤 블루 + 짙은 블루)
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            pastelBlue: '#E8F3FF',
-            softBlue: '#7FB3FF',
-            deepBlue: '#1F4B7A',
-            steel: '#9AA7B2'
-          },
-          boxShadow: {
-            soft: '0 6px 18px rgba(31,75,122,0.08)',
-            soft2: '0 8px 28px rgba(47,92,151,0.08)'
-          }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | 3D Glassmorphism</title>
+    
+    <!-- React & ReactDOM (CDN) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel (JSX 변환용) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind 설정: 애니메이션 및 컬러 확장 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 6s ease-in-out 3s infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
         }
-      }
-    }
-  </script>
+    </script>
 
-  <!-- React + Babel (브라우저에서 JSX 사용) -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-  <style>
-    /* 간단한 reset과 body 스타일 */
-    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: white; }
-  </style>
+    <style>
+        body {
+            background-color: #0f172a; /* 다크 모드 배경 */
+            color: white;
+            overflow-x: hidden;
+        }
+        /* 스크롤바 숨김 (선택사항) */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+    </style>
 </head>
-<body class="text-gray-800">
+<body>
 
-  <div id="root"></div>
+    <div id="root"></div>
 
-  <script type="text/babel">
-    const { useState } = React;
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-    // --- 편집하기 쉬운 텍스트 / 데이터 모음 ---
-    const DATA = {
-      hero: {
-        nameLine: '완도초등학교 교사 박준효',
-        subtitle: 'AI & Edutech 기반 미래교육 — Future Classroom',
-        intro: '기술은 도구이고, 본질은 교육입니다. 교실에서의 효율을 높이고 아이들과의 시간을 더 깊게 만드는 것이 목표입니다.'
-      },
-      about: [
-        `저는 AI와 에듀테크를 교실에 적용하여 '교사의 업무는 줄이고 학생과의 상호작용은 늘리는' 것을 목표로 하는 교육자입니다. 수업 설계에서부터 평가까지 기술을 도구로 활용해 교실 혁신을 추구합니다.`,
-        `학생 중심의 학습을 지향하며, 교사의 전문성 확장과 함께 교육 공동체 전체의 역량을 높이는 데 관심이 많습니다. 실습 중심의 연수와 맞춤형 컨설팅을 통해 현장 적용 가능성을 최우선으로 합니다.`
-      ],
-      experiences: [
-        '완도초등학교 — 교사 (SW·AI 교육 담당)',
-        'SW교육체험센터 전담 강사 — 지역 연수 운영',
-        '교실혁명 선도교사 — 미래교실 모델 개발 참여',
-        '교육부 장관상 수상 — 교실 혁신 및 교육콘텐츠 개발'
-      ],
-      lectures: [
-        { title: 'ChatGPT를 활용한 교실 수업 설계', desc: 'AI 도구를 수업 설계와 평가에 안전하고 효과적으로 적용하는 방법' },
-        { title: 'Notion으로 수업·연수 운영 자동화', desc: '교사 업무 경감을 위한 Notion 템플릿과 운영 노하우' },
-        { title: 'Miricanvas로 만드는 협업형 프로젝트', desc: '학생 참여형 프로젝트 중심 수업 설계 실습' },
-      ],
-      resources: [
-        { file: 'chatgpt.pdf', label: 'ChatGPT 연수 자료' },
-        { file: 'notion.pdf', label: 'Notion 연수 자료' },
-        { file: 'miricanvas.pdf', label: 'Miricanvas 연수 자료' }
-      ],
-      projects: [
-        { title: 'AI CatchMind', desc: 'AI와 함께 맞추는 그림 퀴즈', thumb: 'aicatchmind.png' },
-        { title: '속담 맞추기 게임', desc: '속담 이해력을 높이는 학습 게임', thumb: 'proverb-game.png' },
-        { title: '쇼핑 미션', desc: '수학과 생활문제를 결합한 미션형 앱', thumb: 'shopping-mission.png' },
-        { title: 'TTS 데모', desc: '수업 보조용 TTS 프로토타입', thumb: 'tts-demo.png' }
-      ],
-      contactEmail: 'jhjhpark0800@gmail.com',
-      footerNote: 'Designed for Future Education',
-      footerYear: '2025',
-      footerName: 'Park Jun Hyo'
-    };
+        // [아이콘 컴포넌트] - SVG 직접 사용
+        const IconCode = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+        );
+        const IconLayout = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+        );
+        const IconRocket = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path></svg>
+        );
+        const IconArrowRight = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        );
 
-    // --- 재사용 가능한 컴포넌트들 ---
-    const Button = ({ children, className = '', onClick, href, type='button' }) => {
-      const base = "px-4 py-2 rounded-2xl font-medium shadow-soft flex items-center gap-2";
-      const classes = " " + className;
-      if (href) {
-        return <a href={href} className={`${base} ${classes}`} target="_blank" rel="noopener noreferrer">{children}</a>;
-      }
-      return <button type={type} onClick={onClick} className={`${base} ${classes}`}>{children}</button>;
-    };
-
-    function App(){
-      return (
-        <div className="min-h-screen max-w-5xl mx-auto p-6 md:p-10">
-          {/* HERO */}
-          <header className="grid md:grid-cols-2 gap-8 items-center py-8">
-            <div>
-              <div className="inline-block px-3 py-1 rounded-full text-sm font-semibold bg-pastelBlue text-deepBlue mb-4">AI & Edutech</div>
-              <h1 className="text-3xl md:text-5xl font-extrabold text-deepBlue leading-tight">
-                {DATA.hero.nameLine}
-              </h1>
-              <p className="mt-3 text-lg text-steel">{DATA.hero.subtitle}</p>
-              <p className="mt-4 text-gray-700 max-w-xl">{DATA.hero.intro}</p>
-
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Button className="bg-deepBlue text-white hover:opacity-95" href={"mailto:" + DATA.contactEmail}>
-                  강의 문의
-                </Button>
-                <a href="#projects" className="px-4 py-2 rounded-2xl font-medium shadow-soft border border-gray-200 text-deepBlue hover:bg-pastelBlue">포트폴리오 보기</a>
-              </div>
-            </div>
-
-            <div className="flex justify-center md:justify-end">
-              <div className="w-48 h-48 md:w-56 md:h-56 rounded-2xl overflow-hidden shadow-soft2 border border-gray-100">
-                <img src="profile.png" alt="프로필 사진" className="object-cover w-full h-full" />
-              </div>
-            </div>
-          </header>
-
-          <main className="space-y-12">
-            {/* ABOUT */}
-            <section id="about" className="bg-white p-6 md:p-8 rounded-2xl shadow-soft">
-              <h2 className="text-xl font-bold text-deepBlue">나는 어떤 선생님인가요?</h2>
-              <div className="mt-4 text-gray-700 space-y-3">
-                {DATA.about.map((p, i) => <p key={i}>{p}</p>)}
-              </div>
-            </section>
-
-            {/* EXPERIENCE */}
-            <section id="experience" className="grid md:grid-cols-3 gap-6">
-              <div className="md:col-span-1 p-6 rounded-2xl bg-pastelBlue/60 shadow-soft">
-                <h3 className="font-bold text-deepBlue">Experience & Awards</h3>
-                <p className="mt-2 text-sm text-steel">주요 경력과 수상</p>
-              </div>
-              <div className="md:col-span-2 grid gap-4">
-                {DATA.experiences.map((item, idx) => (
-                  <div key={idx} className="p-4 rounded-xl bg-white border border-gray-100 shadow-soft flex items-start gap-4">
-                    <div className="w-3 h-12 rounded-full bg-softBlue/40"></div>
-                    <div>
-                      <div className="font-semibold text-deepBlue">{item}</div>
-                      <div className="text-sm text-gray-500 mt-1">현장 중심의 교육 실천과 연수 운영 경험을 보유.</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* LECTURES */}
-            <section id="lectures" className="p-6 rounded-2xl bg-white shadow-soft">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-bold text-deepBlue">Lectures / 연수</h3>
-                <p className="text-sm text-steel">현장 적용 중심의 실습 연수</p>
-              </div>
-
-              <div className="mt-4 grid md:grid-cols-3 gap-4">
-                {DATA.lectures.map((lec, i) => (
-                  <div key={i} className="p-4 rounded-xl border border-gray-100 shadow-soft bg-pastelBlue/30">
-                    <h4 className="font-semibold text-deepBlue">{lec.title}</h4>
-                    <p className="mt-2 text-sm text-gray-700">{lec.desc}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6">
-                <h4 className="font-semibold text-deepBlue">연수 자료 다운로드</h4>
-                <div className="mt-3 flex flex-wrap gap-3">
-                  {DATA.resources.map((r, i) => (
-                    <a key={i} href={r.file} download className="px-3 py-2 rounded-xl bg-white border border-gray-200 shadow-soft inline-flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-deepBlue" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v12m0 0l-4-4m4 4l4-4M21 21H3"/></svg>
-                      <span className="text-sm">{r.label}</span>
-                    </a>
-                  ))}
+        // [공통] 3D Glass Card 컴포넌트
+        const GlassCard = ({ children, className = "", hoverEffect = true }) => (
+            <div className={`
+                relative overflow-hidden rounded-2xl border border-white/10 
+                bg-white/5 backdrop-blur-lg shadow-xl 
+                transition-all duration-500 ease-out
+                ${hoverEffect ? 'hover:-translate-y-2 hover:shadow-purple-500/20 hover:border-white/30' : ''}
+                ${className}
+            `}>
+                {/* 카드 내부 빛 반사 효과 */}
+                <div className="absolute -top-20 -right-20 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div className="relative z-10">
+                    {children}
                 </div>
-              </div>
-            </section>
+            </div>
+        );
 
-            {/* PROJECTS / LINKS */}
-            <section id="projects" className="p-6 rounded-2xl bg-white shadow-soft">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-bold text-deepBlue">Links / Projects</h3>
-                <p className="text-sm text-steel">제가 개발하거나 운영한 웹앱·교육프로젝트</p>
-              </div>
+        // [배경] 둥둥 떠다니는 오브젝트
+        const BackgroundBlobs = () => (
+            <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+                <div className="absolute top-[10%] left-[20%] w-72 h-72 bg-purple-600/30 rounded-full mix-blend-screen filter blur-[100px] animate-float"></div>
+                <div className="absolute top-[40%] right-[20%] w-96 h-96 bg-blue-600/20 rounded-full mix-blend-screen filter blur-[100px] animate-float-delayed"></div>
+                <div className="absolute bottom-[10%] left-[30%] w-64 h-64 bg-pink-600/20 rounded-full mix-blend-screen filter blur-[100px] animate-float"></div>
+            </div>
+        );
 
-              <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {DATA.projects.map((p, idx) => (
-                  <div key={idx} className="rounded-xl overflow-hidden bg-pastelBlue/40 shadow-soft border border-gray-100 flex flex-col">
-                    <div className="h-36 bg-gray-100 flex items-center justify-center">
-                      <img src={p.thumb} alt={p.title + " 썸네일"} className="object-contain h-full" />
+        // [네비게이션]
+        const Navbar = () => (
+            <nav className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 px-4">
+                <div className="flex items-center gap-8 px-8 py-3 rounded-full border border-white/10 bg-black/20 backdrop-blur-md shadow-lg">
+                    <a href="#" className="text-white font-bold text-lg tracking-wide hover:text-purple-400 transition-colors">PORTFOLIO</a>
+                    <div className="hidden md:flex gap-6 text-sm font-medium text-gray-300">
+                        <a href="#about" className="hover:text-white transition-colors">About</a>
+                        <a href="#projects" className="hover:text-white transition-colors">Projects</a>
+                        <a href="#contact" className="hover:text-white transition-colors">Contact</a>
                     </div>
-                    <div className="p-4">
-                      <div className="font-semibold text-deepBlue">{p.title}</div>
-                      <div className="text-sm text-gray-600 mt-2">{p.desc}</div>
-                      <div className="mt-3">
-                        <a href="#" className="text-sm underline text-deepBlue">프로젝트 보기 (예시)</a>
-                      </div>
+                </div>
+            </nav>
+        );
+
+        // [섹션 1] 히어로 섹션
+        const Hero = () => (
+            <section className="min-h-screen flex flex-col items-center justify-center text-center px-4 pt-20 relative">
+                <div className="space-y-6 max-w-3xl mx-auto">
+                    <div className="inline-block px-4 py-1 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-300 text-sm font-semibold tracking-wider animate-pulse-slow">
+                        Welcome to my universe
                     </div>
-                  </div>
-                ))}
-              </div>
+                    
+                    <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight">
+                        Design & Code <br/>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                            With Depth.
+                        </span>
+                    </h1>
+                    
+                    <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                        안녕하세요. 사용자 경험에 깊이를 더하는 프론트엔드 개발자입니다.<br/>
+                        React와 현대적인 UI 기술로 입체적인 웹을 만듭니다.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+                        <button className="group relative px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300">
+                            <span className="flex items-center gap-2">
+                                프로젝트 보기 <IconArrowRight />
+                            </span>
+                            {/* 버튼 내부 광택 효과 */}
+                            <div className="absolute inset-0 rounded-xl bg-white/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        </button>
+                        
+                        <button className="px-8 py-4 rounded-xl border border-white/10 bg-white/5 text-white font-bold hover:bg-white/10 transition-all duration-300 backdrop-blur-sm">
+                            연락하기
+                        </button>
+                    </div>
+                </div>
             </section>
+        );
 
-            {/* CONTACT */}
-            <section id="contact" className="p-6 rounded-2xl bg-pastelBlue/50 shadow-soft flex flex-col md:flex-row items-center justify-between gap-4">
-              <div>
-                <h3 className="text-xl font-bold text-deepBlue">강의·연수·컨설팅 문의</h3>
-                <p className="mt-2 text-gray-700">강의·연수·컨설팅 문의는 이메일로 연락 주세요.</p>
-              </div>
-              <div className="flex items-center gap-3">
-                <a className="px-4 py-2 rounded-2xl font-medium shadow-soft border border-deepBlue bg-white text-deepBlue" href={"mailto:" + DATA.contactEmail}>
-                  {DATA.contactEmail}
-                </a>
-              </div>
-            </section>
-          </main>
+        // [섹션 2] 특징/스킬 카드
+        const Features = () => {
+            const features = [
+                { title: "Modern React", desc: "최신 Hooks 패턴과 상태 관리 라이브러리를 활용한 SPA 개발", icon: <IconCode /> },
+                { title: "Interactive UI", desc: "Framer Motion 및 CSS Animation을 활용한 동적 경험 제공", icon: <IconLayout /> },
+                { title: "Performance", desc: "Lighthouse 최적화 및 웹 표준, 접근성을 준수하는 코딩", icon: <IconRocket /> },
+            ];
 
-          {/* FOOTER */}
-          <footer className="mt-12 text-center text-sm text-gray-500">
-            <div>{DATA.footerNote} / © {DATA.footerYear} {DATA.footerName}. All Rights Reserved.</div>
-          </footer>
+            return (
+                <section id="about" className="py-20 px-4 max-w-6xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {features.map((f, i) => (
+                            <GlassCard key={i} className="p-8 group">
+                                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mb-6 text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                    {f.icon}
+                                </div>
+                                <h3 className="text-2xl font-bold mb-3 text-white">{f.title}</h3>
+                                <p className="text-gray-400 leading-relaxed">
+                                    {f.desc}
+                                </p>
+                            </GlassCard>
+                        ))}
+                    </div>
+                </section>
+            );
+        }
 
-          {/* 작은 고정 버튼: 상단으로 */}
-          <a href="#top" className="fixed bottom-6 right-6 p-3 rounded-full shadow-soft bg-white border border-gray-100 hidden md:inline-flex">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-deepBlue" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7"/></svg>
-          </a>
-        </div>
-      );
-    }
+        // [섹션 3] 프로젝트 갤러리
+        const Projects = () => {
+            const projects = [
+                { title: "Crypto Dashboard", tag: "Fintech", color: "from-green-400 to-emerald-600" },
+                { title: "AI Image Gen", tag: "Creative Tool", color: "from-pink-400 to-rose-600" },
+                { title: "Metaverse Chat", tag: "Social", color: "from-blue-400 to-indigo-600" },
+            ];
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-  </script>
+            return (
+                <section id="projects" className="py-20 px-4 max-w-6xl mx-auto">
+                    <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
+                        Featured <span className="text-purple-400">Work</span>
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {projects.map((p, i) => (
+                            <GlassCard key={i} className="p-0 group cursor-pointer">
+                                {/* 썸네일 영역 */}
+                                <div className={`h-48 w-full bg-gradient-to-br ${p.color} relative overflow-hidden`}>
+                                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <span className="px-4 py-2 bg-white/20 backdrop-blur-md rounded-full text-white font-semibold border border-white/30">View Case</span>
+                                    </div>
+                                </div>
+                                {/* 텍스트 영역 */}
+                                <div className="p-6">
+                                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{p.tag}</span>
+                                    <h3 className="text-xl font-bold text-white mt-2 group-hover:text-purple-400 transition-colors">{p.title}</h3>
+                                    <p className="text-sm text-gray-400 mt-2">
+                                        React, Tailwind CSS 및 외부 API를 연동하여 제작한 웹 애플리케이션입니다.
+                                    </p>
+                                </div>
+                            </GlassCard>
+                        ))}
+                    </div>
+                </section>
+            );
+        }
 
+        // [푸터]
+        const Footer = () => (
+            <footer id="contact" className="border-t border-white/10 mt-20 bg-black/20 backdrop-blur-md">
+                <div className="max-w-6xl mx-auto py-12 px-4 text-center">
+                    <h2 className="text-2xl font-bold mb-6">Let's build something amazing together.</h2>
+                    <div className="flex justify-center gap-6 mb-8">
+                        <a href="#" className="text-gray-400 hover:text-white transition-colors">Github</a>
+                        <a href="#" className="text-gray-400 hover:text-white transition-colors">LinkedIn</a>
+                        <a href="#" className="text-gray-400 hover:text-white transition-colors">Email</a>
+                    </div>
+                    <p className="text-gray-600 text-sm">
+                        © 2024 My Portfolio. Designed with React & Tailwind.
+                    </p>
+                </div>
+            </footer>
+        );
+
+        const App = () => {
+            return (
+                <div className="relative min-h-screen font-sans antialiased selection:bg-purple-500 selection:text-white">
+                    <BackgroundBlobs />
+                    <Navbar />
+                    <Hero />
+                    <Features />
+                    <Projects />
+                    <Footer />
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
 </html>
